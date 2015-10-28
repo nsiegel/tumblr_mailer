@@ -19,4 +19,10 @@ var csvParse = function(csvFile) {
   return arrOfObj;
 };
 
-console.log(csvParse(csvFile));
+var contactList = csvParse(csvFile);
+
+contactList.forEach(function(contact) {
+  var personalizeEmail = emailTemplate.replace(/FIRST_NAME/g, contact.firstName);
+  personalizeEmail= personalizeEmail.replace(/NUM_MONTHS_SINCE_CONTACT/g, contact.numMonthsSinceContact);
+  console.log(personalizeEmail);
+});
