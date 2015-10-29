@@ -7,6 +7,8 @@ var client = tumblr.createClient({
   token: 'NKJOeAFavDFTLcmsAsgXdg0zcwOB6Ce2u1cqFAdXCxPUFqVUSo',
   token_secret: 'bWVzR5ynKzHSS3xrnbA6PFUB1sDqtvnwMu8NaVm1TWUFwr18dM'
 });
+var mandrill = require('mandrill-api/mandrill');
+var mandrill_client = new mandrill.Mandrill('_WnZAdD2hNeJowZDTiRb8g');
 
 var csvFile = fs.readFileSync("friend_list.csv","utf8");
 var emailTemplate = fs.readFileSync("email_template.ejs","utf8");
@@ -44,6 +46,38 @@ client.posts('nsiegel2.tumblr.com', function(err, blog){
   contactList.forEach(function(contact) {
     contact.latestPosts = latestPosts;
     var personalizedEmail = ejs.render(emailTemplate, contact);
-    console.log(personalizedEmail);
+    sendEmail(contact.firstName, contact.emailAddress, 'Nicole', 'nsiegel2@gmail.com',
+    'Hello!', personalizedEmail);
   });
 });
+
+function sendEmail(to_name, to_email, from_name, from_email, subject, message_html){
+    var message = {
+        "html": message_html,
+        "subject": subject,
+        "from_email": from_email,
+        "from_name": from_name,
+        "to": [{
+                "email": to_email,
+                "name": to_name
+            }],
+        "important": false,
+        "track_opens": true,
+        "auto_html": false,
+        "preserve_recipients": true,
+        "merge": false,
+        "tags": [
+            "Fullstack_Tumblrmailer_Workshop"
+        ]
+    };
+    var async = false;
+    var ip_pool = "Main Pool";
+    mandrill_client.messages.send({"message": message, "async": async, "ip_pool": ip_pool}, function(result) {
+        // console.log(message);
+        // console.log(result);
+    }, function(e) {
+        // Mandrill returns the error as an object with name and message keys
+        console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+        // A mandrill error occurred: Unknown_Subaccount - No subaccount exists with the id 'customer-123'
+    });
+ }
