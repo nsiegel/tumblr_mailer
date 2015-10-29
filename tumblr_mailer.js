@@ -11,9 +11,9 @@ var csvParse = function(csvFile) {
   arr.forEach(function(contact) {
     var obj = {};
     contact = contact.split(',');
-    for (var i = 0; i < contact.length; i++) {
-      obj[keys[i]] = contact[i];
-    }
+    contact.forEach(function(item, i) {
+      obj[keys[i]] = item;
+    });
     arrOfObj.push(obj);
   });
   return arrOfObj;
