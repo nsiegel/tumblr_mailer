@@ -1,7 +1,8 @@
 var fs = require('fs');
+var ejs = require('ejs');
 
 var csvFile = fs.readFileSync("friend_list.csv","utf8");
-var emailTemplate = fs.readFileSync("email_template.html","utf8");
+var emailTemplate = fs.readFileSync("email_template.ejs","utf8");
 
 var csvParse = function(csvFile) {
   var arrOfObj = [];
@@ -22,7 +23,6 @@ var csvParse = function(csvFile) {
 var contactList = csvParse(csvFile);
 
 contactList.forEach(function(contact) {
-  var personalizeEmail = emailTemplate.replace(/FIRST_NAME/g, contact.firstName);
-  personalizeEmail= personalizeEmail.replace(/NUM_MONTHS_SINCE_CONTACT/g, contact.numMonthsSinceContact);
-  console.log(personalizeEmail);
+  var personalizedEmail = ejs.render(emailTemplate, contact);
+  console.log(personalizedEmail);
 });
